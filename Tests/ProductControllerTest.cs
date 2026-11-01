@@ -3,6 +3,7 @@ using FluentAssertions;
 using NSubstitute;
 using PurchaseApi.Controllers;
 using PurchaseApi.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tests
 {
@@ -21,7 +22,7 @@ namespace Tests
         {
             dataProvider.GetProduct(Arg.Any<int>()).Returns(expected);
 
-            sut.Get(1).Should().Be(expected);
+            sut.Get(1).Value.Should().Be(expected);
         }
 
         [Theory, AutoNSubstituteData]
@@ -44,7 +45,7 @@ namespace Tests
         {
             dataProvider.UpdateProduct(index, expected).Returns(expected);
 
-            sut.Update(index, expected).Should().Be(expected);
+            sut.Update(index, expected).Value.Should().Be(expected);
         }
 
         [Theory, AutoNSubstituteData]
@@ -61,6 +62,19 @@ namespace Tests
             sut.Delete(index);
 
             dataProvider.Received(1).DeleteProduct(index);
+        }
+
+        [Theory, AutoNSubstituteData]
+        public void GetWithIndex_ReturnsNotFound(
+            [Frozen] IDataProviderService dataProvider,
+            [Frozen] ProductsController sut)
+        {
+            dataProvider.GetProduct(-1)
+                .Returns(_ => throw new ArgumentOutOfRangeException());
+
+            Action act = () => sut.Get(-1);
+
+            sut.Get(-1).Result.Should().BeOfType<NotFoundResult>();
         }
     }
 }

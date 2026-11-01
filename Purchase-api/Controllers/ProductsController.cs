@@ -23,9 +23,16 @@ namespace PurchaseApi.Controllers
         }
 
         [HttpGet("{index}")]
-        public string Get(int index)
+        public ActionResult<string> Get(int index)
         {
-            return _dataProviderService.GetProduct(index);
+            try
+            {
+                return _dataProviderService.GetProduct(index);
+            }
+            catch(ArgumentOutOfRangeException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPost]
@@ -35,15 +42,31 @@ namespace PurchaseApi.Controllers
         }
 
         [HttpPut("{index}")]
-        public string Update(int index, string name)
+        public ActionResult<string> Update(int index, string name)
         {
-            return _dataProviderService.UpdateProduct(index, name);
+            try
+            {
+                return _dataProviderService.UpdateProduct(index, name);
+            }
+            catch(ArgumentOutOfRangeException)
+            {
+                return NotFound();
+            }
+            
         }
 
         [HttpDelete("{index}")]
-        public void Delete(int index)
+        public IActionResult Delete(int index)
         {
-            _dataProviderService.DeleteProduct(index);
+            try
+            {
+                _dataProviderService.DeleteProduct(index);
+                return Ok("Product deleted");
+            }
+            catch(ArgumentOutOfRangeException)
+            {
+                return NotFound();
+            }
         }
     }
 }
