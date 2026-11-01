@@ -1,3 +1,5 @@
+using PurchaseApi.Services;
+
 namespace PurchaseApi
 {
     public class Program
@@ -12,7 +14,11 @@ namespace PurchaseApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            // your code here
+            
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IShipmentService, ShipmentService>();
+            builder.Services.AddScoped<IDataProviderService, DataProviderService>();
 
             var app = builder.Build();
 
@@ -26,7 +32,6 @@ namespace PurchaseApi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
